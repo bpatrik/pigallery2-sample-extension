@@ -1,0 +1,8 @@
+{
+  "name": "logger",
+  "version": "1.0.0",
+  "dependencies": {
+    "lodash": "4.17.21",
+    "pigallery2-extension-kit": "latest"
+  }
+}
