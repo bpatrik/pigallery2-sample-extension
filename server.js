@@ -67,6 +67,7 @@ const init = async (extension) => {
     extension.events.gallery.MetadataLoader
         .loadPhotoMetadata.before(async (input, event) => {
         extension.Logger.silly('onBefore: processing: ', JSON.stringify(input));
+        return input;
         /*
         * (Optional) It is possible to prevent default run and return with the expected out output of the MetadataLoader.loadPhotoMetadata
         NOTE: if event.stopPropagation = true, MetadataLoader.loadPhotoMetadata.after won't be called.
@@ -82,7 +83,7 @@ const init = async (extension) => {
         .loadPhotoMetadata.after(async (output) => {
         // Overrides the caption on all photos
         // NOTE: this needs db reset as MetadataLoader only runs during indexing time
-        output.caption += extension.config.getConfig().myFavouriteNumber + '|PG2 sample extension:' + output.caption;
+        output.caption = extension.config.getConfig().myFavouriteNumber + '|PG2 sample extension:' + output.caption;
         return output;
     });
     /**

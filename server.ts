@@ -66,6 +66,7 @@ export const init = async (extension: IExtensionObject<TestConfig>): Promise<voi
   extension.events.gallery.MetadataLoader
     .loadPhotoMetadata.before(async (input, event) => {
     extension.Logger.silly('onBefore: processing: ', JSON.stringify(input));
+    return input;
     /*
     * (Optional) It is possible to prevent default run and return with the expected out output of the MetadataLoader.loadPhotoMetadata
     NOTE: if event.stopPropagation = true, MetadataLoader.loadPhotoMetadata.after won't be called.
