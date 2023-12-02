@@ -66,6 +66,8 @@ export const init = async (extension: IExtensionObject<TestConfig>): Promise<voi
   extension.events.gallery.MetadataLoader
     .loadPhotoMetadata.before(async (input, event) => {
     extension.Logger.silly('onBefore: processing: ', JSON.stringify(input));
+    // The return value of this function will be piped to the next before handler
+    // or if no other handler then returned to the app
     return input;
     /*
     * (Optional) It is possible to prevent default run and return with the expected out output of the MetadataLoader.loadPhotoMetadata
@@ -80,11 +82,13 @@ export const init = async (extension: IExtensionObject<TestConfig>): Promise<voi
   });
 
   extension.events.gallery.MetadataLoader
-    .loadPhotoMetadata.after(async (output: PhotoMetadata) => {
+    .loadPhotoMetadata.after(async (data: { input: [string], output: PhotoMetadata }) => {
     // Overrides the caption on all photos
     // NOTE: this needs db reset as MetadataLoader only runs during indexing time
-    output.caption = extension.config.getConfig().myFavouriteNumber + '|PG2 sample extension:' + output.caption;
-    return output;
+    data.output.caption = extension.config.getConfig().myFavouriteNumber + '|PG2 sample extension:' + data.output.caption;
+    // The return value of this function will be piped to the next after handler
+    // or if no other handler then returned to the app
+    return data.output;
   });
 
   /**

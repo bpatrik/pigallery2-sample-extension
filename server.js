@@ -67,6 +67,8 @@ const init = async (extension) => {
     extension.events.gallery.MetadataLoader
         .loadPhotoMetadata.before(async (input, event) => {
         extension.Logger.silly('onBefore: processing: ', JSON.stringify(input));
+        // The return value of this function will be piped to the next before handler
+        // or if no other handler then returned to the app
         return input;
         /*
         * (Optional) It is possible to prevent default run and return with the expected out output of the MetadataLoader.loadPhotoMetadata
@@ -80,11 +82,13 @@ const init = async (extension) => {
         */
     });
     extension.events.gallery.MetadataLoader
-        .loadPhotoMetadata.after(async (output) => {
+        .loadPhotoMetadata.after(async (data) => {
         // Overrides the caption on all photos
         // NOTE: this needs db reset as MetadataLoader only runs during indexing time
-        output.caption = extension.config.getConfig().myFavouriteNumber + '|PG2 sample extension:' + output.caption;
-        return output;
+        data.output.caption = extension.config.getConfig().myFavouriteNumber + '|PG2 sample extension:' + data.output.caption;
+        // The return value of this function will be piped to the next after handler
+        // or if no other handler then returned to the app
+        return data.output;
     });
     /**
      * (Optional) Adding a REST api endpoint for logged-in users
