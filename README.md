@@ -2,6 +2,8 @@
 
 Pigallery 2 extension example
 
+Fork this project to build your own extension.
+
 
 Usage:
 
