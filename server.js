@@ -1,7 +1,7 @@
 "use strict";
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cleanUp = exports.init = exports.TestConfig = void 0;
+exports.cleanUp = exports.init = exports.initConfig = exports.TestConfig = void 0;
 const tslib_1 = require("tslib");
 const UserDTO_1 = require("./node_modules/pigallery2-extension-kit/lib/common/entities/UserDTO");
 // Including prod extension packages. You need to prefix them with ./node_modules
@@ -47,12 +47,16 @@ TestConfig = tslib_1.__decorate([
     (0, SubConfigClass_1.SubConfigClass)({ softReadonly: true })
 ], TestConfig);
 exports.TestConfig = TestConfig;
+/**
+ * (Optional) Setting the configuration template.
+ * This function can be called any time. Only use it for setting config template.
+ */
+const initConfig = (extension) => {
+    extension.setConfigTemplate(TestConfig);
+};
+exports.initConfig = initConfig;
 const init = async (extension) => {
     extension.Logger.debug(`My extension is setting up. name: ${extension.extensionName}, id: ${extension.extensionId}`);
-    /**
-     * (Optional) Setting the configuration template
-     */
-    extension.config.setTemplate(TestConfig);
     /**
      * (Optional) Adding custom SQL table
      */
@@ -102,7 +106,7 @@ const init = async (extension) => {
     /**
      * (Optional) Creating a messenger. You can use it with TopPickJob to send photos
      */
-    extension.messengers.addMessenger('SampleMessenger', 
+    extension.messengers.addMessenger('SampleMessenger',
     /**
      * (Optional) Creating messenger config (these values will be requested in the TopPickJob)
      * Note: Jobs cant use typeconfig yet, so it uses a different way for configuration

@@ -16,6 +16,7 @@ import * as _ from './node_modules/lodash';
 import {Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
 import {SubConfigClass} from 'typeconfig/src/decorators/class/SubConfigClass';
 import {ConfigProperty} from 'typeconfig/src/decorators/property/ConfigPropoerty';
+import {IExtensionConfigInit} from '../../src/backend/model/extension/IExtension';
 
 // Using typeorm for ORM
 @Entity()
@@ -41,20 +42,22 @@ export class TestConfig {
   myFavouriteNumber: number = 42;
 }
 
+/**
+ * (Optional) Setting the configuration template.
+ * This function can be called any time. Only use it for setting config template.
+ */
+export const initConfig = (extension: IExtensionConfigInit<TestConfig>) =>{
+  extension.setConfigTemplate(TestConfig);
+}
+
 export const init = async (extension: IExtensionObject<TestConfig>): Promise<void> => {
 
   extension.Logger.debug(`My extension is setting up. name: ${extension.extensionName}, id: ${extension.extensionId}`);
 
   /**
-   * (Optional) Setting the configuration template
-   */
-  extension.config.setTemplate(TestConfig);
-
-  /**
    * (Optional) Adding custom SQL table
    */
   await extension.db.setExtensionTables([TestLoggerEntity]);
-
   /**
    * (Optional) Using prod package
    */
