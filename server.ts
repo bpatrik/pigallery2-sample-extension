@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-inferrable-types */
-
 // Including dev-kit interfaces. It is not necessary, only helps development with types.
 // You need to prefix them with ./node_modules
 import {IExtensionObject} from './node_modules/pigallery2-extension-kit';
@@ -14,9 +12,7 @@ import * as _ from './node_modules/lodash';
 
 // Importing packages that are available in the main app (listed in the packages.json in pigallery2)
 import {Column, Entity, Index, PrimaryGeneratedColumn} from 'typeorm';
-import {SubConfigClass} from 'typeconfig/src/decorators/class/SubConfigClass';
-import {ConfigProperty} from 'typeconfig/src/decorators/property/ConfigPropoerty';
-import {IExtensionConfigInit} from '../../src/backend/model/extension/IExtension';
+import {TestConfig} from './config';
 
 // Using typeorm for ORM
 @Entity()
@@ -30,25 +26,6 @@ class TestLoggerEntity {
 }
 
 
-// Using https://github.com/bpatrik/typeconfig for configuration
-@SubConfigClass({softReadonly: true})
-export class TestConfig {
-  @ConfigProperty({
-    tags: {
-      name: `Test config value`,
-    },
-    description: `This is just a description`,
-  })
-  myFavouriteNumber: number = 42;
-}
-
-/**
- * (Optional) Setting the configuration template.
- * This function can be called any time. Only use it for setting config template.
- */
-export const initConfig = (extension: IExtensionConfigInit<TestConfig>) =>{
-  extension.setConfigTemplate(TestConfig);
-}
 
 export const init = async (extension: IExtensionObject<TestConfig>): Promise<void> => {
 
