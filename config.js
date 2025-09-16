@@ -14,6 +14,7 @@ let TestConfig = class TestConfig {
         this.myFavouriteNumber = 42;
     }
 };
+exports.TestConfig = TestConfig;
 tslib_1.__decorate([
     (0, ConfigPropoerty_1.ConfigProperty)({
         tags: {
@@ -23,10 +24,9 @@ tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:type", Number)
 ], TestConfig.prototype, "myFavouriteNumber", void 0);
-TestConfig = tslib_1.__decorate([
+exports.TestConfig = TestConfig = tslib_1.__decorate([
     (0, SubConfigClass_1.SubConfigClass)({ softReadonly: true })
 ], TestConfig);
-exports.TestConfig = TestConfig;
 /**
  * (Optional) Setting the configuration template.
  * This function can be called any time. Only use it for setting config template.
