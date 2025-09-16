@@ -91,6 +91,7 @@ const init = async (extension) => {
             buttonString: 'Delete',
             customFields: [
                 {
+                    id: 'confirm',
                     label: 'confirm deletion',
                     type: 'boolean',
                     defaultValue: false,
