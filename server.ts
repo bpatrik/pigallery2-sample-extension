@@ -1,4 +1,4 @@
-// Including dev-kit interfaces. It is not necessary, only helps development with types.
+// Including dev-kit interfaces. It is not necessary, it only helps development with types.
 // You need to prefix them with ./node_modules
 import {IExtensionObject} from './node_modules/pigallery2-extension-kit';
 import {PhotoMetadata} from './node_modules/pigallery2-extension-kit/lib/common/entities/PhotoDTO';
@@ -15,7 +15,7 @@ import {Column, Entity, Index, PrimaryGeneratedColumn, Repository} from 'typeorm
 import {TestConfig} from './config';
 import {ParamsDictionary} from 'express-serve-static-core';
 import {UserDTO} from 'pigallery2-extension-kit/lib/common/entities/UserDTO';
-import {MediaEntity} from '../../src/backend/model/database/enitites/MediaEntity';
+import {MediaEntity} from 'pigallery2-extension-kit/lib/backend/model/database/enitites/MediaEntity';
 
 // Using typeorm for ORM
 @Entity()
