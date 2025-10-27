@@ -1,10 +1,10 @@
 {
   "name": "pigallery2-sample-extension",
-  "version": "2.5.0-edge",
+  "version": "3.0.0",
   "license": "MIT",
   "dependencies": {
     "lodash": "4.17.21",
-    "pigallery2-extension-kit": "2.6.0-edge"
+    "pigallery2-extension-kit": "3.0.0"
   },
   "devDependencies": {
     "typescript": "5.8.3",
