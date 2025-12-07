@@ -4,7 +4,7 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "4.17.21",
-    "pigallery2-extension-kit": "3.0.1"
+    "pigallery2-extension-kit": "3.1.0"
   },
   "devDependencies": {
     "typescript": "5.8.3",
