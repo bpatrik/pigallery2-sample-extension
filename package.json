@@ -15,7 +15,6 @@
     "@types/node-geocoder": "4.2.6"
   },
   "scripts": {
-      "build": "tsc"
+    "build": "tsc"
   }
-
 }
