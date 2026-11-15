@@ -6,16 +6,16 @@
       "noFallthroughCasesInSwitch": true,
       "sourceMap": true,
       "declaration": false,
-      "downlevelIteration": true,
       "emitDecoratorMetadata": true,
       "experimentalDecorators": true,
-      "moduleResolution": "node",
       "importHelpers": true,
       "target": "ES2022",
-      "module": "CommonJS",
+      // Node's module system: emits CommonJS (no "type": "module"), the app loads server.js with require()
+      "module": "nodenext",
       "useDefineForClassFields": false,
       "skipLibCheck": true,
       "noEmitOnError": false,
+      "types": ["node"],
       "lib": [
         "ES2022",
         "dom"

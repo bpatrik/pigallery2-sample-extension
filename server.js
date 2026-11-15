@@ -8,7 +8,7 @@ const SearchQueryDTO_1 = require("./node_modules/pigallery2-extension-kit/lib/co
 // lodash does not have types
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const _ = require("./node_modules/lodash");
+const _ = tslib_1.__importStar(require("./node_modules/lodash"));
 // Importing packages that are available in the main app (listed in the packages.json in pigallery2)
 const typeorm_1 = require("typeorm");
 // Using typeorm for ORM
@@ -71,7 +71,7 @@ const init = async (extension) => {
     extension.RESTApi.get.jsonResponse(['/sample'], UserDTO_1.UserRoles.User, async () => {
         // Inserting into our extension table and returning with the result
         const conn = await extension.db.getSQLConnection();
-        conn.getRepository(TestLoggerEntity).save({ text: 'called /sample at: ' + Date.now() });
+        await conn.getRepository(TestLoggerEntity).save({ text: 'called /sample at: ' + Date.now() });
         return await conn.getRepository(TestLoggerEntity).find();
     });
     /**
@@ -150,13 +150,13 @@ const init = async (extension) => {
                 media.metadata.size = JSON.parse(body.data.fields.size);
             }
             if (body.data.fields.creationDate !== undefined) {
-                media.metadata.creationDate = parseInt(body.data.fields.creationDate, 10);
+                media.metadata.creationDate = Number(body.data.fields.creationDate);
             }
             if (body.data.fields.creationDateOffset !== undefined) {
                 media.metadata.creationDateOffset = body.data.fields.creationDateOffset;
             }
             if (body.data.fields.fileSize !== undefined) {
-                media.metadata.fileSize = parseInt(body.data.fields.fileSize, 10);
+                media.metadata.fileSize = Number(body.data.fields.fileSize);
             }
             // Save the updated media entity
             await repository.save(media);
@@ -177,7 +177,13 @@ const init = async (extension) => {
         alwaysVisible: true
     });
     /**
-     * (Optional) Adding a (non-clickable) button to create a logical album and add photos to it.
+     * (Optional) Adding a button to create a logical album and add photos to it.
+     * TODO: this is half baked solution. On reindex or DB reset (like after a version upgrade) the album will be lost or photos of the reindexed gallery will be missing.
+     * Possible workarounds:
+     * 1. (medium) store the keyword in a separate table and readd it after indexing (override that function in the extension)
+     * 2. (easy) Read the current DB after indexing and make sure that the indexing output contains all album tags.
+     * 3. (medium) Save the tag as a sidecar file next to the photo, so indexing will pick it up automatically.
+     *     * (hard) Alternative of this solution is to store the sidecar in the tmp folder and override the indexing to also read sidecars from the tmp folder.
      */
     extension.ui.addMediaButton({
         name: 'Add to album',
@@ -205,9 +211,10 @@ const init = async (extension) => {
         }
     }, async (params, body, user, media, repository) => {
         // Update media entity with data from the body
-        if (body.data.customFields.album) {
+        const albumName = body.data.customFields?.album;
+        if (typeof albumName === 'string' && albumName.trim()) {
             // Crate the album keyword
-            const albumKey = 'pg-album:' + body.data.customFields.album.toLowerCase()
+            const albumKey = 'pg-album:' + albumName.toLowerCase()
                 .trim()
                 .replace(/[^a-z0-9]+/g, '-') // Replace groups of non-alphanumeric characters with one hyphen
                 .replace(/^-+|-+$/g, ''); // Remove hyphens from the start or end
@@ -216,12 +223,12 @@ const init = async (extension) => {
             media.metadata.keywords.push(albumKey);
             await repository.save(media);
             // create the album if not exists
-            await extension._app.objectManagers.AlbumManager.addIfNotExistSavedSearch(body.data.customFields.album, {
+            await extension._app.objectManagers.AlbumManager.addIfNotExistSavedSearch(albumName, {
                 type: SearchQueryDTO_1.SearchQueryTypes.keyword,
                 value: albumKey,
                 matchType: SearchQueryDTO_1.TextSearchQueryMatchTypes.exact_match
             }, false);
-            extension.Logger.debug('Media added to album: ' + body.data.customFields.album + '');
+            extension.Logger.debug('Media added to album: ' + albumName);
         }
         else {
             extension.Logger.warn('No album name provided');

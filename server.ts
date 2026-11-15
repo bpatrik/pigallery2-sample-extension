@@ -27,10 +27,10 @@ import {ParamsDictionary} from 'express-serve-static-core';
 class TestLoggerEntity {
   @Index()
   @PrimaryGeneratedColumn({unsigned: true})
-  id: number;
+  id!: number;
 
   @Column()
-  text: string;
+  text!: string;
 }
 
 
@@ -85,7 +85,7 @@ export const init = async (extension: IExtensionObject<TestConfig>): Promise<voi
   extension.RESTApi.get.jsonResponse(['/sample'], UserRoles.User, async () => {
     // Inserting into our extension table and returning with the result
     const conn = await extension.db.getSQLConnection();
-    conn.getRepository(TestLoggerEntity).save({text: 'called /sample at: ' + Date.now()});
+    await conn.getRepository(TestLoggerEntity).save({text: 'called /sample at: ' + Date.now()});
     return await conn.getRepository(TestLoggerEntity).find();
   });
 
@@ -167,13 +167,13 @@ export const init = async (extension: IExtensionObject<TestConfig>): Promise<voi
         media.metadata.size = JSON.parse(body.data.fields.size);
       }
       if (body.data.fields.creationDate !== undefined) {
-        media.metadata.creationDate = parseInt(body.data.fields.creationDate, 10);
+        media.metadata.creationDate = Number(body.data.fields.creationDate);
       }
       if (body.data.fields.creationDateOffset !== undefined) {
         media.metadata.creationDateOffset = body.data.fields.creationDateOffset;
       }
       if (body.data.fields.fileSize !== undefined) {
-        media.metadata.fileSize = parseInt(body.data.fields.fileSize, 10);
+        media.metadata.fileSize = Number(body.data.fields.fileSize);
       }
 
       // Save the updated media entity
@@ -233,9 +233,10 @@ export const init = async (extension: IExtensionObject<TestConfig>): Promise<voi
     }
   }, async (params: ParamsDictionary, body: IMediaRequestBody, user: UserDTO, media: MediaEntity, repository: Repository<MediaEntity>) => {
     // Update media entity with data from the body
-    if (body.data.customFields.album) {
+    const albumName = body.data.customFields?.album;
+    if (typeof albumName === 'string' && albumName.trim()) {
       // Crate the album keyword
-      const albumKey = 'pg-album:' + body.data.customFields.album.toLowerCase()
+      const albumKey = 'pg-album:' + albumName.toLowerCase()
         .trim()
         .replace(/[^a-z0-9]+/g, '-')          // Replace groups of non-alphanumeric characters with one hyphen
         .replace(/^-+|-+$/g, '');             // Remove hyphens from the start or end
@@ -244,12 +245,12 @@ export const init = async (extension: IExtensionObject<TestConfig>): Promise<voi
       media.metadata.keywords.push(albumKey);
       await repository.save(media);
       // create the album if not exists
-      await extension._app.objectManagers.AlbumManager.addIfNotExistSavedSearch(body.data.customFields.album, {
+      await extension._app.objectManagers.AlbumManager.addIfNotExistSavedSearch(albumName, {
         type: SearchQueryTypes.keyword,
         value: albumKey,
         matchType: TextSearchQueryMatchTypes.exact_match
       } as TextSearch, false);
-      extension.Logger.debug('Media added to album: ' + body.data.customFields.album + '');
+      extension.Logger.debug('Media added to album: ' + albumName);
     } else {
       extension.Logger.warn('No album name provided');
     }
